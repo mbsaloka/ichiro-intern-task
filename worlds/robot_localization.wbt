@@ -1,0 +1,216 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "../protos/E-puck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/robotstadium/protos/RobotstadiumSoccerField.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation 0.04177996289759864 0.9917047951899933 -0.12155671062285496 0.6671864854279451
+  position -4.095754673051369 0.5115819742520207 4.9580259405928695
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+E-puck {
+  translation 1.52802 -0.0671737 -6.67461e-05
+  rotation 0 0 1 -0.05601530717958614
+  controller "camera_find_goal"
+  turretSlot [
+    Camera {
+      translation 0.044 0 -0.0206
+      name "my_camera"
+      recognitionColors [
+        1 1 1
+      ]
+      width 256
+      height 144
+      recognition Recognition {
+      }
+    }
+  ]
+}
+RobotstadiumSoccerField {
+}
+DEF LANDMARK_GOAL_1 Solid {
+  translation 4.54465 0.80313 0.45
+  children [
+    DEF LANDMARK_1 Shape {
+      appearance PBRAppearance {
+        baseColor 0 1 0
+        roughness 1
+        metalness 0
+      }
+      geometry Cylinder {
+        height 0.9
+        radius 0.05
+      }
+    }
+  ]
+  recognitionColors [
+    0 1 0
+  ]
+}
+DEF LANDMARK_GOAL_2 Solid {
+  translation 4.54465 -0.79687 0.45
+  children [
+    USE LANDMARK_1
+  ]
+  name "solid(1)"
+  recognitionColors [
+    0 1 0
+  ]
+}
+DEF LANDMARK_T_1 Solid {
+  translation 0.0026924 3.01711 0.45
+  children [
+    DEF LANDMARK_2 Shape {
+      appearance PBRAppearance {
+        baseColor 0 1 1
+        roughness 1
+        metalness 0
+      }
+      geometry Cylinder {
+        height 0.9
+        radius 0.05
+      }
+    }
+  ]
+  name "solid(3)"
+  recognitionColors [
+    0 1 1
+  ]
+}
+DEF LANDMARK_T_2 Solid {
+  translation 0.0026924 -3.02289 0.45
+  children [
+    USE LANDMARK_2
+  ]
+  name "solid(2)"
+  recognitionColors [
+    0 1 1
+  ]
+}
+DEF LANDMARK_T_3 Solid {
+  translation 4.52853 1.11297 0.45
+  children [
+    USE LANDMARK_2
+  ]
+  name "solid(4)"
+  recognitionColors [
+    0 1 1
+  ]
+}
+DEF LANDMARK_T_4 Solid {
+  translation 4.52853 -1.11703 0.45
+  children [
+    USE LANDMARK_2
+  ]
+  name "solid(5)"
+  recognitionColors [
+    0 1 1
+  ]
+}
+DEF LANDMARK_CORNER_1 Solid {
+  translation 4.53269 3.01711 0.2
+  children [
+    DEF LANDMARK_3 Shape {
+      appearance PBRAppearance {
+        baseColor 1 1 0
+        roughness 1
+        metalness 0
+      }
+      geometry Cylinder {
+        height 0.4
+        radius 0.05
+      }
+    }
+  ]
+  name "solid(6)"
+  recognitionColors [
+    1 1 0
+  ]
+}
+DEF LANDMARK_CORNER_2 Solid {
+  translation 4.53269 -3.02289 0.2
+  children [
+    USE LANDMARK_3
+  ]
+  name "solid(7)"
+  recognitionColors [
+    1 1 0
+  ]
+}
+DEF LANDMARK_CORNER_3 Solid {
+  translation 3.94269 1.10711 0.2
+  children [
+    USE LANDMARK_3
+  ]
+  name "solid(8)"
+  recognitionColors [
+    1 1 0
+  ]
+}
+DEF LANDMARK_CORNER_4 Solid {
+  translation 3.94269 -1.11289 0.2
+  children [
+    USE LANDMARK_3
+  ]
+  name "solid(9)"
+  recognitionColors [
+    1 1 0
+  ]
+}
+DEF LANDMARK_CROSS_1 Solid {
+  translation 3.24335 -0.00309019 0.2
+  children [
+    DEF LANDMARK_4 Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 1
+        roughness 1
+        metalness 0
+      }
+      geometry Cylinder {
+        height 0.4
+        radius 0.05
+      }
+    }
+  ]
+  name "solid(10)"
+  recognitionColors [
+    1 0 1
+  ]
+}
+DEF LANDMARK_CROSS_2 Solid {
+  translation -0.00665 -0.00309019 0.2
+  children [
+    USE LANDMARK_4
+  ]
+  name "solid(11)"
+  recognitionColors [
+    1 0 1
+  ]
+}
+DEF LANDMARK_CROSS_3 Solid {
+  translation -0.00665 0.81691 0.2
+  children [
+    USE LANDMARK_4
+  ]
+  name "solid(12)"
+  recognitionColors [
+    1 0 1
+  ]
+}
+DEF LANDMARK_CROSS_4 Solid {
+  translation -0.00665 -0.81309 0.2
+  children [
+    USE LANDMARK_4
+  ]
+  name "solid(13)"
+  recognitionColors [
+    1 0 1
+  ]
+}

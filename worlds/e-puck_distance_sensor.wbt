@@ -1,0 +1,38 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "../protos/E-puck.proto"
+
+WorldInfo {
+  basicTimeStep 16
+}
+Viewpoint {
+  orientation -0.4521159063662846 0.5131288859648968 0.7295820403484565 1.7583876541223558
+  position -0.4150530779614973 -0.9494551504239034 1.734707364295626
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 2 0.5
+}
+E-puck {
+  translation -0.91 1.76964e-11 -3.19809e-05
+  rotation 0.9502909530751398 0.311363299851635 3.0072189475462325e-06 2.8920930800374177e-09
+  controller "distance_sensor_1"
+  turretSlot [
+    InertialUnit {
+    }
+    DistanceSensor {
+      translation 0.04 0 -0.01
+      name "front_ds"
+      lookupTable [
+        0 0 0
+        1 1000 0
+      ]
+    }
+  ]
+}

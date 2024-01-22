@@ -1,0 +1,93 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "../protos/E-puck.proto"
+
+WorldInfo {
+  basicTimeStep 16
+}
+Viewpoint {
+  orientation -0.2965629178244479 0.30483439698819914 0.9050560348311539 1.6429922368193246
+  position -0.2746873645509119 -4.659092857388555 3.4817880897699767
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 2 2
+}
+Solid {
+  translation 0.527704 -0.0957965 0.15
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.960784 0.760784 0.0666667
+        roughness 1
+        metalness 0
+      }
+      geometry Cylinder {
+        height 0.3
+        radius 0.1
+      }
+    }
+  ]
+  recognitionColors [
+    1 1 0
+  ]
+}
+E-puck {
+  hidden translation_1 0 0.026 0.02
+  hidden rotation_1 0 1 0 3.7865076642983935
+  hidden translation_2 0 -0.02599999999999997 0.02
+  hidden rotation_2 0 1 0 3.7865076635496946
+  translation -0.7487945323563958 -0.10684965526740313 -3.1915647711676376e-05
+  rotation -8.856095168374764e-05 -0.9976474626710059 -0.06855313547213929 0.0025753030553397525
+  controller "camera_find_goal"
+  turretSlot [
+    InertialUnit {
+    }
+    DistanceSensor {
+      translation 0.04 0 -0.01
+      name "front_ds"
+      lookupTable [
+        0 0 0
+        1 1000 0
+      ]
+    }
+    Camera {
+      translation 0.04 0 -0.022
+      name "my_camera"
+      recognitionColors [
+        1 1 0
+      ]
+      fieldOfView 0.84
+      width 52
+      height 39
+      recognition Recognition {
+      }
+    }
+  ]
+}
+Solid {
+  translation 0.100919 -0.433854 0.15
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.878431 0.105882 0.141176
+        roughness 1
+        metalness 0
+      }
+      geometry Cylinder {
+        height 0.3
+        radius 0.1
+      }
+    }
+  ]
+  name "solid(1)"
+  recognitionColors [
+    1 0 0
+  ]
+}
