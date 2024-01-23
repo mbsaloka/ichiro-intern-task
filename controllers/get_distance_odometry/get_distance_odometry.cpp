@@ -1,35 +1,33 @@
-#include <webots/DistanceSensor.hpp>
+// File:          get_distance_odometry.cpp
+// Date:          23 Jan 2024
+// Description:   Use odometry to get distance
+// Author:        mbsaloka
+// Modifications:
+
+#include <webots/Robot.hpp>
 #include <webots/Motor.hpp>
 #include <webots/PositionSensor.hpp>
-#include <webots/Robot.hpp>
 
 #include <cmath>
 
 #define TIME_STEP 64
 #define MAX_SPEED 6.28
-#define MAX_COUNTER 5
 #define WHEEL_R 0.0205
-#define WHEEL_DIS 0.052
+#define WHEEL_DIS 0.053
 
 using namespace webots;
 
 int main(int argc, char **argv) {
     Robot *robot = new Robot();
 
-    DistanceSensor *gs[3];
-    char gsNames[3][4] = {"gs0", "gs1", "gs2"};
-
-    for (int i = 0; i < 3; i++) {
-        gs[i] = robot->getDistanceSensor(gsNames[i]);
-        gs[i]->enable(TIME_STEP);
-    }
-
     Motor *leftMotor = robot->getMotor("left wheel motor");
     Motor *rightMotor = robot->getMotor("right wheel motor");
+
     leftMotor->setPosition(INFINITY);
     rightMotor->setPosition(INFINITY);
-    leftMotor->setVelocity(0.0);
-    rightMotor->setVelocity(0.0);
+
+    leftMotor->setVelocity(0.5 * MAX_SPEED);
+    rightMotor->setVelocity(0.5 * -MAX_SPEED);
 
     PositionSensor *leftPositionSensor =
         robot->getPositionSensor("left wheel sensor");
@@ -45,19 +43,12 @@ int main(int argc, char **argv) {
     double robot_pose[3] = {0.0, 0.0, 0.0};
     double last_ps_value[2] = {0.0, 0.0};
 
-    char current_state = 'f';
-    int counter = 0;
-
     while (robot->step(TIME_STEP) != -1) {
-        double gsValues[3];
-        for (int i = 0; i < 3; i++) {
-            gsValues[i] = gs[i]->getValue();
-        }
-        bool line_left = gsValues[0] > 600;
-        bool line_right = gsValues[2] > 600;
-
         double ps_value[2] = {leftPositionSensor->getValue(),
                               rightPositionSensor->getValue()};
+
+        // dist_value[0] = ps_value[0] * encoder_unit;
+        // dist_value[1] = ps_value[1] * encoder_unit;
 
         for (int i = 0; i < 2; i++) {
             double diff = ps_value[i] - last_ps_value[i];
@@ -72,52 +63,27 @@ int main(int argc, char **argv) {
         double w = (dist_value[1] - dist_value[0]) / WHEEL_DIS;
         double dt = 1;
 
-        robot_pose[2] += w * dt;
         robot_pose[0] += v * cos(robot_pose[2]) * dt;
         robot_pose[1] += v * sin(robot_pose[2]) * dt;
+        robot_pose[2] += w * dt;
 
         for (int i = 0; i < 2; i++) {
             last_ps_value[i] = ps_value[i];
         }
 
-        double leftSpeed = MAX_SPEED;
-        double rightSpeed = MAX_SPEED;
-
-        if (current_state == 'f') {
-            if (line_right) {
-                current_state = 'l';
-                counter = 0;
-            } else if (line_left) {
-                current_state = 'r';
-                counter = 0;
-            }
-        }
-
-        if (current_state == 'l') {
-            leftSpeed = 0.4 * MAX_SPEED;
-            rightSpeed = 0.8 * MAX_SPEED;
-            if (counter >= MAX_COUNTER) {
-                current_state = 'f';
-            }
-        } else if (current_state == 'r') {
-            leftSpeed = 0.8 * MAX_SPEED;
-            rightSpeed = 0.4 * MAX_SPEED;
-            if (counter >= MAX_COUNTER) {
-                current_state = 'f';
-            }
-        }
-
-        counter++;
-
-        leftMotor->setVelocity(leftSpeed);
-        rightMotor->setVelocity(rightSpeed);
-
         std::cout << "Position Sensor Value [L, R]: [" << ps_value[0] << " "
                   << ps_value[1] << "]" << std::endl;
+
+        // std::cout << "Left wheel distance: " << dist_value[0] << " m"
+        //           << std::endl;
+        // std::cout << "Right wheel distance: " << dist_value[1] << " m"
+        //           << std::endl;
+
         std::cout << "Robot pose: [" << robot_pose[0] << " " << robot_pose[1]
                   << " " << robot_pose[2] << "]" << std::endl;
+
         std::cout << "--------------------------------" << std::endl;
-    };
+    }
 
     delete robot;
     return 0;

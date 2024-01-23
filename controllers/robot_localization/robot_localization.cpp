@@ -1,6 +1,6 @@
-// File:          camera_find_goal.cpp
-// Date:          22 Jan 2024
-// Description:   using camera to find landmark
+// File:          robot_localization.cpp
+// Date:          23 Jan 2024
+// Description:   localization using camera with mcl algorithm
 // Author:        mbsaloka
 // Modifications:
 
@@ -8,10 +8,15 @@
 #include <webots/Motor.hpp>
 #include <webots/DistanceSensor.hpp>
 #include <webots/Camera.hpp>
+#include <webots/PositionSensor.hpp>
+
+#include <cmath>
 #include <iomanip>
 
 #define TIME_STEP 64
 #define MAX_SPEED 6.28
+#define WHEEL_R 0.0205
+#define WHEEL_DIS 0.053
 
 using namespace webots;
 
@@ -46,13 +51,27 @@ int main(int argc, char **argv) {
         std::cout << "Not" << std::endl;
     }
 
+    PositionSensor *leftPositionSensor =
+        robot->getPositionSensor("left wheel sensor");
+    PositionSensor *rightPositionSensor =
+        robot->getPositionSensor("right wheel sensor");
+    leftPositionSensor->enable(TIME_STEP);
+    rightPositionSensor->enable(TIME_STEP);
+
+    double dist_value[2] = {0.0, 0.0};
+    double wheel_circum = 2 * M_PI * WHEEL_R;
+    double encoder_unit = wheel_circum / 6.28;
+
+    double robot_pose[3] = {0.0, 0.0, 0.0};
+    double last_ps_value[2] = {0.0, 0.0};
+
     while (robot->step(TIME_STEP) != -1) {
+        // CAMERA RECOGNIZE
         const CameraRecognitionObject *recognitionObjects =
             camera->getRecognitionObjects();
 
         int numObjects = camera->getRecognitionNumberOfObjects();
 
-        // Memeriksa apakah ada objek yang dikenali
         if (numObjects > 0 && recognitionObjects) {
             RecognizedObject object[numObjects];
 
@@ -115,12 +134,40 @@ int main(int argc, char **argv) {
                           << std::fixed << std::setprecision(5)
                           << object[i].position[1] << std::endl;
             }
-
-            std::cout << "---------------------------------------------------"
-                      << std::endl;
+            std::cout << ">>>" << std::endl;
         } else {
             std::cout << "No objects recognized." << std::endl;
         }
+
+        // ODOMETRY
+        double ps_value[2] = {leftPositionSensor->getValue(),
+                              rightPositionSensor->getValue()};
+        for (int i = 0; i < 2; i++) {
+            double diff = ps_value[i] - last_ps_value[i];
+            if (diff < 0.001) {
+                diff = 0.0;
+                ps_value[i] = last_ps_value[i];
+            }
+            dist_value[i] = diff * encoder_unit;
+        }
+
+        double v = (dist_value[0] + dist_value[1]) / 2.0;
+        double w = (dist_value[1] - dist_value[0]) / WHEEL_DIS;
+        double dt = 1;
+
+        robot_pose[0] += v * cos(robot_pose[2]) * dt;
+        robot_pose[1] += v * sin(robot_pose[2]) * dt;
+        robot_pose[2] += w * dt;
+
+        for (int i = 0; i < 2; i++) {
+            last_ps_value[i] = ps_value[i];
+        }
+
+        std::cout << "Position Sensor Value [L, R]: [" << ps_value[0] << " "
+                  << ps_value[1] << "]" << std::endl;
+        std::cout << "Robot pose: [" << robot_pose[0] << " " << robot_pose[1]
+                  << " " << robot_pose[2] << "]" << std::endl;
+        std::cout << "--------------------------------" << std::endl;
     };
 
     delete robot;
