@@ -9,8 +9,8 @@ WorldInfo {
   basicTimeStep 16
 }
 Viewpoint {
-  orientation -0.2960496317976647 0.3043068003859636 0.9054015610497502 1.6426115235305196
-  position -0.2746873645509119 -4.659092857388555 3.4817880897699767
+  orientation -0.38625474778481733 0.48032144573153296 0.7874633823766393 1.5917820782017524
+  position -0.686183034895051 -2.2787518778589875 2.9849057948388635
 }
 TexturedBackground {
 }
@@ -18,32 +18,15 @@ TexturedBackgroundLight {
 }
 RectangleArena {
   floorSize 2 2
-}
-Solid {
-  translation 0.527704 -0.0957965 0.15
-  children [
-    Shape {
-      appearance PBRAppearance {
-        baseColor 0.960784 0.760784 0.0666667
-        roughness 1
-        metalness 0
-      }
-      geometry Cylinder {
-        height 0.3
-        radius 0.1
-      }
-    }
-  ]
-  recognitionColors [
-    1 1 0
-  ]
+  floorTileSize 1 1
 }
 E-puck {
-  hidden rotation_1 0 1 0 3.7865076642983935
-  hidden rotation_2 0 1 0 3.7865076635496946
-  translation -0.7487945323563958 -0.10684965526740313 -3.1915647711676376e-05
+  translation -0.0117008 0.0183293 -0.00057145
   rotation -8.856095168374764e-05 -0.9976474626710059 -0.06855313547213929 0.0025753030553397525
-  controller "camera_find_goal"
+  controller "get_distance_odometry"
+  controllerArgs [
+    ""
+  ]
   turretSlot [
     InertialUnit {
     }
@@ -67,25 +50,5 @@ E-puck {
       recognition Recognition {
       }
     }
-  ]
-}
-Solid {
-  translation 0.100919 -0.433854 0.15
-  children [
-    Shape {
-      appearance PBRAppearance {
-        baseColor 0.878431 0.105882 0.141176
-        roughness 1
-        metalness 0
-      }
-      geometry Cylinder {
-        height 0.3
-        radius 0.1
-      }
-    }
-  ]
-  name "solid(1)"
-  recognitionColors [
-    1 0 1
   ]
 }

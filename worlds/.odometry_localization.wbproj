@@ -7,4 +7,4 @@ centralWidgetVisible: 1
 orthographicViewHeight: 1
 textFiles: 0 "controllers/odometry_line_follower_cpp/odometry_line_follower_cpp.cpp"
 consoles: Console:All:All
-renderingDevicePerspectives: e-puck:camera;1;32;0;0
+renderingDevicePerspectives: e-puck:camera;0;32;0;0.326797

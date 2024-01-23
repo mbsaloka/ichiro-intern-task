@@ -8,8 +8,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/project
 WorldInfo {
 }
 Viewpoint {
-  orientation 0.04177996289759864 0.9917047951899933 -0.12155671062285496 0.6671864854279451
-  position -4.095754673051369 0.5115819742520207 4.9580259405928695
+  orientation 0.041769759015159925 0.9914609910197814 -0.1235329531659005 0.6572706473601461
+  position -4.144886298807883 0.5157288699406725 4.899239187832355
 }
 TexturedBackground {
 }
@@ -18,7 +18,7 @@ TexturedBackgroundLight {
 E-puck {
   translation 1.52802 -0.0671737 -6.67461e-05
   rotation 0 0 1 -0.05601530717958614
-  controller "camera_find_goal"
+  controller "robot_localization"
   turretSlot [
     Camera {
       translation 0.044 0 -0.0206
