@@ -38,8 +38,8 @@ int main(int argc, char **argv) {
     leftMotor->setPosition(INFINITY);
     rightMotor->setPosition(INFINITY);
 
-    leftMotor->setVelocity(0.05 * MAX_SPEED);
-    rightMotor->setVelocity(-0.05 * MAX_SPEED);
+    leftMotor->setVelocity(0.5 * MAX_SPEED);
+    rightMotor->setVelocity(0.5 * MAX_SPEED);
 
     Camera *camera = robot->getCamera("my_camera");
     camera->enable(TIME_STEP);

@@ -4,13 +4,14 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/RectangleArena.proto"
 EXTERNPROTO "../protos/E-puck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/samples/contests/robocup/protos/RobocupSoccerField.proto"
 
 WorldInfo {
   basicTimeStep 16
 }
 Viewpoint {
-  orientation -0.2960496317976647 0.3043068003859636 0.9054015610497502 1.6426115235305196
-  position -0.2746873645509119 -4.659092857388555 3.4817880897699767
+  orientation -0.06526155481645915 0.9777874979144731 0.19917966358313952 0.6467137479801478
+  position -7.950603344855064 4.618779307584343 6.20991798072598
 }
 TexturedBackground {
 }
@@ -39,11 +40,9 @@ Solid {
   ]
 }
 E-puck {
-  hidden rotation_1 0 1 0 3.7865076642983935
-  hidden rotation_2 0 1 0 3.7865076635496946
-  translation -0.7487945323563958 -0.10684965526740313 -3.1915647711676376e-05
+  translation 0.124764 5.38339 -3.19156e-05
   rotation -8.856095168374764e-05 -0.9976474626710059 -0.06855313547213929 0.0025753030553397525
-  controller "camera_find_goal"
+  controller "camera_recognize_pixel"
   turretSlot [
     InertialUnit {
     }
@@ -70,11 +69,11 @@ E-puck {
   ]
 }
 Solid {
-  translation 0.100919 -0.433854 0.15
+  translation 0.164263 -0.531161 0.15
   children [
     Shape {
       appearance PBRAppearance {
-        baseColor 0.878431 0.105882 0.141176
+        baseColor 1 0 0
         roughness 1
         metalness 0
       }
@@ -88,4 +87,8 @@ Solid {
   recognitionColors [
     1 0 1
   ]
+}
+RobocupSoccerField {
+  translation 0.136048 5.37791 0
+  size "kid"
 }

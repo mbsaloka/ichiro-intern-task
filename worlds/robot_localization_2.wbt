@@ -1,0 +1,38 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "../protos/E-puck.proto"
+EXTERNPROTO "../protos/RobotstadiumSoccerField.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation 0.12911210317213678 0.6727609663765449 -0.7285072044493212 0.5151424976987224
+  position -4.391756175884318 1.9247645168478353 2.1964696849119023
+  follow "e-puck"
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+E-puck {
+  rotation 0 0 -1 0.056019
+  controller "camera_recognize_pixel"
+  turretSlot [
+    Camera {
+      translation 0.044 0 0.54
+      rotation 0 1 0 0.523595
+      name "my_camera"
+      recognitionColors [
+        1 1 1
+      ]
+      width 52
+      height 39
+      recognition Recognition {
+      }
+    }
+  ]
+}
+RobotstadiumSoccerField {
+}

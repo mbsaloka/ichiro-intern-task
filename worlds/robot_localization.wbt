@@ -3,17 +3,20 @@
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "../protos/E-puck.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/robotstadium/protos/RobotstadiumSoccerField.proto"
+EXTERNPROTO "../protos/RobotstadiumSoccerField.proto"
 
 WorldInfo {
 }
 Viewpoint {
-  orientation 0.041769759015159925 0.9914609910197814 -0.1235329531659005 0.6572706473601461
-  position -4.144886298807883 0.5157288699406725 4.899239187832355
+  orientation 0.0565629693517051 -0.9865615299375701 -0.15328724064761284 5.567302021986545
+  position -4.324096497403 -0.6113956266776033 5.299943052464761
+  follow "e-puck"
 }
 TexturedBackground {
 }
 TexturedBackgroundLight {
+}
+RobotstadiumSoccerField {
 }
 E-puck {
   translation 1.52802 -0.0671737 -6.67461e-05
@@ -33,10 +36,8 @@ E-puck {
     }
   ]
 }
-RobotstadiumSoccerField {
-}
 DEF LANDMARK_GOAL_1 Solid {
-  translation 4.54465 0.80313 0.45
+  translation 4.54023 0.805592 0.45
   children [
     DEF LANDMARK_1 Shape {
       appearance PBRAppearance {
@@ -55,7 +56,7 @@ DEF LANDMARK_GOAL_1 Solid {
   ]
 }
 DEF LANDMARK_GOAL_2 Solid {
-  translation 4.54465 -0.79687 0.45
+  translation 4.54511 -0.79762 0.45
   children [
     USE LANDMARK_1
   ]
@@ -85,7 +86,7 @@ DEF LANDMARK_T_1 Solid {
   ]
 }
 DEF LANDMARK_T_2 Solid {
-  translation 0.0026924 -3.02289 0.45
+  translation 0.0026924 -3.03289 0.45
   children [
     USE LANDMARK_2
   ]
@@ -95,7 +96,7 @@ DEF LANDMARK_T_2 Solid {
   ]
 }
 DEF LANDMARK_T_3 Solid {
-  translation 4.52853 1.11297 0.45
+  translation 4.52446 1.11191 0.45
   children [
     USE LANDMARK_2
   ]
@@ -105,7 +106,7 @@ DEF LANDMARK_T_3 Solid {
   ]
 }
 DEF LANDMARK_T_4 Solid {
-  translation 4.52853 -1.11703 0.45
+  translation 4.53029 -1.12257 0.45
   children [
     USE LANDMARK_2
   ]
@@ -115,7 +116,7 @@ DEF LANDMARK_T_4 Solid {
   ]
 }
 DEF LANDMARK_CORNER_1 Solid {
-  translation 4.53269 3.01711 0.2
+  translation 4.52513 3.01085 0.2
   children [
     DEF LANDMARK_3 Shape {
       appearance PBRAppearance {
@@ -135,7 +136,7 @@ DEF LANDMARK_CORNER_1 Solid {
   ]
 }
 DEF LANDMARK_CORNER_2 Solid {
-  translation 4.53269 -3.02289 0.2
+  translation 4.5311 -3.03697 0.2
   children [
     USE LANDMARK_3
   ]
@@ -145,7 +146,7 @@ DEF LANDMARK_CORNER_2 Solid {
   ]
 }
 DEF LANDMARK_CORNER_3 Solid {
-  translation 3.94269 1.10711 0.2
+  translation 3.96116 1.11736 0.2
   children [
     USE LANDMARK_3
   ]
@@ -155,7 +156,7 @@ DEF LANDMARK_CORNER_3 Solid {
   ]
 }
 DEF LANDMARK_CORNER_4 Solid {
-  translation 3.94269 -1.11289 0.2
+  translation 3.95176 -1.11307 0.2
   children [
     USE LANDMARK_3
   ]
@@ -165,7 +166,7 @@ DEF LANDMARK_CORNER_4 Solid {
   ]
 }
 DEF LANDMARK_CROSS_1 Solid {
-  translation 3.24335 -0.00309019 0.2
+  translation 3.25102 0.00520554 0.2
   children [
     DEF LANDMARK_4 Shape {
       appearance PBRAppearance {
@@ -205,7 +206,7 @@ DEF LANDMARK_CROSS_3 Solid {
   ]
 }
 DEF LANDMARK_CROSS_4 Solid {
-  translation -0.00665 -0.81309 0.2
+  translation -0.00665 -0.82309 0.2
   children [
     USE LANDMARK_4
   ]

@@ -6,7 +6,7 @@ maximizedDockId: -1
 centralWidgetVisible: 1
 renderingMode: PLAIN
 orthographicViewHeight: 1
-textFiles: 0 "controllers/get_distance_odometry/get_distance_odometry.cpp"
+textFiles: 0 "controllers/camera_recognize_pixel/camera_recognize_pixel.cpp"
 consoles: Console:All:All
 renderingDevicePerspectives: e-puck:camera;0;5.28205;0;0
-renderingDevicePerspectives: e-puck:my_camera;0;5.82051;0;0
+renderingDevicePerspectives: e-puck:my_camera;1;5.82051;0;0
