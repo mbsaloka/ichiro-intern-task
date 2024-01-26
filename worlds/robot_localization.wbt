@@ -21,7 +21,7 @@ RobotstadiumSoccerField {
 E-puck {
   translation 1.52802 -0.0671737 -6.67461e-05
   rotation 0 0 1 -0.05601530717958614
-  controller "robot_localization"
+  controller "camera_find_goal"
   turretSlot [
     Camera {
       translation 0.044 0 -0.0206

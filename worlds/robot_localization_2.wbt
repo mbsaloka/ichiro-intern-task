@@ -18,7 +18,7 @@ TexturedBackgroundLight {
 }
 E-puck {
   rotation 0 0 -1 0.056019
-  controller "camera_recognize_pixel"
+  controller "robot_localization"
   turretSlot [
     Camera {
       translation 0.044 0 0.54
