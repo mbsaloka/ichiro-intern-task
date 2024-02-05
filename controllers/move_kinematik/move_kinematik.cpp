@@ -9,6 +9,7 @@
 #include <webots/PositionSensor.hpp>
 #include <webots/InertialUnit.hpp>
 #include <chrono>
+#include <iomanip>
 
 #define TIME_STEP 16
 #define MAX_SPEED 6.28
@@ -26,8 +27,8 @@ int degreeIMU(InertialUnit *imu) {
 void getIMUDegrees(InertialUnit *imu) {
     int degrees =
         ((int)(imu->getRollPitchYaw()[2] * (180 / M_PI)) % 360 + 360) % 360;
-    std::cout << degrees << "° degrees" << std::endl;
-    // std::cout << imu->getRollPitchYaw()[2] << " rad" << std::endl;
+    std::cout << degrees << "° degrees | " << std::fixed << std::setprecision(2)
+              << -imu->getRollPitchYaw()[2] << " rad" << std::endl;
     // std::cout << "---------------------------------" << std::endl;
 }
 
