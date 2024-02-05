@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     rightMotor->setPosition(INFINITY);
 
     leftMotor->setVelocity(0.5 * MAX_SPEED);
-    rightMotor->setVelocity(0.5 * -MAX_SPEED);
+    rightMotor->setVelocity(0.5 * MAX_SPEED);
 
     PositionSensor *leftPositionSensor =
         robot->getPositionSensor("left wheel sensor");

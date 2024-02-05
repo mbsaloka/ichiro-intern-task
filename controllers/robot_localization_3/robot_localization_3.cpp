@@ -1,6 +1,6 @@
 // File:          robot_localization.cpp
-// Date:          23 Jan 2024
-// Description:   localization using camera with mcl algorithm
+// Date:          3 Feb 2024
+// Description:   localization using camera with mcl algorithm (only 1 landmark)
 // Author:        mbsaloka
 // Modifications:
 
@@ -15,13 +15,16 @@
 #include <iomanip>
 #include <vector>
 #include <utility>
+#include <random>
 
-#define TIME_STEP 64
+#define TIME_STEP 1024
 #define MAX_SPEED 6.28
 #define WHEEL_R 0.0205
 #define WHEEL_DIS 0.052
 #define FIELD_WIDTH 450
 #define FIELD_LENGTH 600
+#define LANDMARK_X 325
+#define LANDMARK_Y 0
 
 using namespace webots;
 
@@ -82,11 +85,10 @@ void print_recognized_objects(std::vector<RecognizedObject> object) {
 
         for (int i = 0; i < numObjects; i++) {
             std::cout << std::fixed << std::setprecision(5)
-                      << object[i].position[0] << std::setw(10) << std::fixed
-                      << std::setprecision(5) << object[i].position[1]
-                      << std::endl;
+                      << object[i].position[0] * 100 << std::setw(10)
+                      << std::fixed << std::setprecision(5)
+                      << object[i].position[1] * 100 << std::endl;
         }
-
     } else {
         std::cout << "No objects recognized." << std::endl;
     }
@@ -94,39 +96,27 @@ void print_recognized_objects(std::vector<RecognizedObject> object) {
 }
 
 // Function to calculate individual likelihood for one object
-double calculate_object_likelihood(
-    const RecognizedObject &measurement,
-    const std::pair<double, double> &prediction) {
-    double sigma_x = 1.0;  // Gantilah dengan deviasi standar yang sesuai
-    double sigma_y = 1.0;  // Gantilah dengan deviasi standar yang sesuai
+double calculate_likelihood(const RecognizedObject &measurement,
+                            const std::pair<double, double> &particle) {
+    double sigma_x = 1.0;
+    double sigma_y = 1.0;
+
+    double relative_position_x = LANDMARK_X - particle.first;
+    double relative_position_y = LANDMARK_Y - particle.second;
 
     double exponent =
-        -0.5 * (pow((measurement.position[0] - prediction.first), 2) /
+        -0.5 * (pow((measurement.position[0] * 100 - relative_position_x), 2) /
                     pow(sigma_x, 2) +
-                pow((measurement.position[1] - prediction.second), 2) /
+                pow((measurement.position[1] * 100 - relative_position_y), 2) /
                     pow(sigma_y, 2));
 
     return exp(exponent) / (2 * M_PI * sigma_x * sigma_y);
 }
 
-// Function to calculate total likelihood for all objects
-double calculate_total_likelihood(
-    const std::vector<RecognizedObject> &measurement,
-    const std::pair<double, double> &prediction) {
-    double total_likelihood = 1.0;
-
-    for (const auto &object_measurement : object_measurements) {
-        total_likelihood *=
-            calculate_object_likelihood(object_measurement, prediction);
-    }
-
-    return total_likelihood;
-}
-
 // Function for resampling particles
-void resample_particles(std::vector<ParticlePrediction> &particles,
+void resample_particles(std::vector<std::pair<double, double>> &particles,
                         std::vector<double> &weights) {
-    std::vector<ParticlePrediction> new_particles;
+    std::vector<std::pair<double, double>> new_particles;
     std::random_device rd;
     std::mt19937 gen(rd());
     std::discrete_distribution<> dist(weights.begin(), weights.end());
@@ -179,12 +169,12 @@ int main(int argc, char **argv) {
     double last_ps_value[2] = {0.0, 0.0};
 
     // Landmark pose in cm
-    double landmark[14][2] = {
-        {0.0, 0.0},     {0.0, 80.0},     {0.0, -80.0},   {0.0, 30.0},
-        {0.0, -30.0},   {320.0, 0.0},    {380.0, 100.0}, {380.0, -100.0},
-        {450.0, 100.0}, {450.0, -100.0}, {450.0, 300.0}, {450.0, -300.0},
-        {450.0, 80.0},  {450.0, -80.0},
-    };
+    // double landmark[14][2] = {
+    //     {0.0, 0.0},     {0.0, 80.0},     {0.0, -80.0},   {0.0, 30.0},
+    //     {0.0, -30.0},   {320.0, 0.0},    {380.0, 100.0}, {380.0, -100.0},
+    //     {450.0, 100.0}, {450.0, -100.0}, {450.0, 300.0}, {450.0, -300.0},
+    //     {450.0, 80.0},  {450.0, -80.0},
+    // };
 
     // MCL variables
     int num_particles = FIELD_WIDTH * FIELD_LENGTH;
@@ -192,7 +182,7 @@ int main(int argc, char **argv) {
     std::vector<double> weights;
 
     for (int i = 0; i < FIELD_WIDTH; ++i) {
-        for (int j = 0; j < FIELD_LENGTH; ++j) {
+        for (int j = -FIELD_LENGTH / 2; j < FIELD_LENGTH / 2; ++j) {
             std::pair<double, double> particle;
             particle = {i, j};
             particles.push_back(particle);
@@ -207,6 +197,7 @@ int main(int argc, char **argv) {
         // Camera recognize object
         std::vector<RecognizedObject> recognized_object =
             camera_recognition(camera);
+
         print_recognized_objects(recognized_object);
 
         // Odometry calculation
@@ -245,9 +236,12 @@ int main(int argc, char **argv) {
         // MCL algorithm
         // Loop through each particle
         for (int i = 0; i < num_particles; ++i) {
-            // Likelihood evaluation
-            double likelihood =
-                calculate_likelihood(recognized_object, particles[i]);
+            double likelihood = 0.0;
+            if (recognized_object.size() > 0) {
+                // Likelihood evaluation
+                likelihood =
+                    calculate_likelihood(recognized_object[0], particles[i]);
+            }
 
             // Assign likelihood as weight to the particle
             weights[i] = likelihood;
@@ -263,10 +257,63 @@ int main(int argc, char **argv) {
             weights[i] /= sum_weights;
         }
 
+        // Print particles
+        double sum_samples = 0.0;
+        double best_sample_weight = 0.0;
+        int best_sample_index = 0;
+        for (int i = 0; i < num_particles; i++) {
+            if (weights[i] > 0.00001) {
+                std::cout << "Particle " << std::setw(5) << i
+                          << "  weight: " << std::fixed << std::setprecision(5)
+                          << weights[i] << std::setw(5) << " [" << std::fixed
+                          << std::setprecision(2) << particles[i].first << ", "
+                          << std::fixed << std::setprecision(2)
+                          << particles[i].second << "]" << std::endl;
+                sum_samples += weights[i];
+
+                if (weights[i] > best_sample_weight) {
+                    best_sample_weight = weights[i];
+                    best_sample_index = i;
+                }
+            }
+        }
+
+        std::cout << "Sum weights: " << sum_samples << std::endl;
+        std::cout << "Best sample: " << best_sample_weight << " (particle num "
+                  << best_sample_index << " [" << std::fixed
+                  << std::setprecision(2) << particles[best_sample_index].first
+                  << ", " << std::fixed << std::setprecision(2)
+                  << particles[best_sample_index].second << "])" << std::endl;
+
         // Resampling particles based on weights
-        resample_particles(particles, weights);
+        // resample_particles(particles, weights);
+
+        // std::cout << "-------------------------------------------" <<
+        // std::endl; Print resampled particles for (int i = 0; i <
+        // num_particles; i++) {
+        //     if (weights[i] > 0.00001) {
+        //         std::cout << "Particle " << std::setw(5) << i
+        //                   << "  weight: " << std::fixed <<
+        //                   std::setprecision(5)
+        //                   << weights[i] << std::setw(5) << " [" << std::fixed
+        //                   << std::setprecision(2) << particles[i].first << ",
+        //                   "
+        //                   << std::fixed << std::setprecision(2)
+        //                   << particles[i].second << "]" << std::endl;
+        //     }
+        // }
+        // std::cout << "Sum weights: " << sum_samples << std::endl;
+        // std::cout << "Best sample: " << best_sample_weight << " (particle num
+        // "
+        //           << best_sample_index << " [" << std::fixed
+        //           << std::setprecision(2) <<
+        //           particles[best_sample_index].first
+        //           << ", " << std::fixed << std::setprecision(2)
+        //           << particles[best_sample_index].second << "])" <<
+        //           std::endl;
 
         // Your resampled particles are now in the particle_predictions vector
+        break;
     };
 
     delete robot;
