@@ -52,7 +52,6 @@ void teleop_keyboard(Keyboard kb, Motor *leftMotor, Motor *rightMotor) {
     int key = kb.getKey();
     double leftSpeed = 0.0;
     double rightSpeed = 0.0;
-    // std::cout << "key pressed: " << key << std::endl;
 
     if (key == 315) {
         leftSpeed = 1.0;
@@ -118,7 +117,6 @@ double calculate_object_likelihood(const RecognizedObject &measurement,
     double sigma_y = 1.0;
 
     double best_likelihood = 0.0;
-    // int best_index = -1;
     for (int i = 0; i < 14; i++) {
         double relative_position_x = particle.x + measurement.position[0] * 100;
         double relative_position_y = particle.y + measurement.position[1] * 100;
@@ -132,13 +130,6 @@ double calculate_object_likelihood(const RecognizedObject &measurement,
         relative_position_x = x_rot + particle.x;
         relative_position_y = y_rot + particle.y;
 
-        // relative_position_x =
-        //     particle.x + (dx * cos(particle.theta) - dy *
-        //     sin(particle.theta));
-        // relative_position_y =
-        //     particle.y + (dx * sin(particle.theta) + dy *
-        //     cos(particle.theta));
-
         double exponent =
             -0.5 *
             (pow((LANDMARK[i][0] - relative_position_x), 2) / pow(sigma_x, 2) +
@@ -148,29 +139,8 @@ double calculate_object_likelihood(const RecognizedObject &measurement,
 
         if (likelihood > best_likelihood) {
             best_likelihood = likelihood;
-            // best_index = i;
         }
-
-        // double log_likelihood =
-        //     -0.5 *
-        //     (log(2 * M_PI * sigma_x * sigma_y) +
-        //      pow((LANDMARK[i][0] - relative_position_x), 2) / pow(sigma_x, 2)
-        //      + pow((LANDMARK[i][1] - relative_position_y), 2) / pow(sigma_y,
-        //      2));
-
-        // if (log_likelihood > best_likelihood) {
-        //     best_likelihood = log_likelihood;
-        //     // best_index = i;
-        // }
-        // std::cout << "log_likelihood [" << i << "] : " << log_likelihood << "
-        // ("
-        //           << LANDMARK[i][0] << ", " << LANDMARK[i][1] << ")"
-        // << std::endl;
     }
-    // std::cout << "best_likelihood : " << best_likelihood << " ("
-    //           << measurement.position[0] << ", " << measurement.position[1]
-    //           << ") -> [" << best_index << "]" << std::endl;
-    // std::cout << "-------------------------------------------" << std::endl;
 
     return best_likelihood;
 }
@@ -380,17 +350,6 @@ int main(int argc, char **argv) {
 
                     // Assign likelihood as weight to the particle
                     weights[i] = likelihood;
-                    // std::cout << "Likelihood: " << likelihood << std::endl;
-
-                    // std::cout << "Particle " << std::setw(5) << i
-                    //           << "  weight: " << std::fixed <<
-                    //           std::setprecision(5)
-                    //           << weights[i] << std::setw(5) << " [" <<
-                    //           std::fixed
-                    //           << std::setprecision(2) << particles[i].first
-                    //           << ",
-                    //           "
-                    //           << particles[i].second << "]" << std::endl;
                 }
 
                 // Normalize weights

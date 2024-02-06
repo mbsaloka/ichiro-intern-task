@@ -1,14 +1,28 @@
 Webots Project File version R2023b
-perspectives: 000000ff00000000fd00000003000000000000000000000000fc0100000001fb0000001a0044006f00630075006d0065006e0074006100740069006f006e000000000000000014000000000000000000000001000002220000031bfc0200000001fb0000001400540065007800740045006400690074006f007201000000160000031b0000008900ffffff0000000300000800000000f7fc0100000002fb0000000e0043006f006e0073006f006c00650100000000000005660000000000000000fb0000001a0043006f006e0073006f006c00650041006c006c0041006c006c0100000000000008000000006900ffffff000005dc0000031b00000001000000020000000100000008fc00000000
-simulationViewPerspectives: 000000ff0000000100000002000000fc0000046a0100000002010000000100
+perspectives: 000000ff00000000fd00000003000000000000000000000000fc0100000001fb0000001a0044006f00630075006d0065006e0074006100740069006f006e000000000000000014000000000000000000000001000002220000029efc0200000001fb0000001400540065007800740045006400690074006f007201000000160000029e0000008900ffffff000000030000080000000174fc0100000002fb0000000e0043006f006e0073006f006c00650100000000000005660000000000000000fb0000001a0043006f006e0073006f006c00650041006c006c0041006c006c0100000000000008000000006900ffffff000005dc0000029e00000001000000020000000100000008fc00000000
+simulationViewPerspectives: 000000ff000000010000000200000137000004a30100000002010000000100
 sceneTreePerspectives: 000000ff00000001000000030000001c000001f1000001370100000002010000000200
 maximizedDockId: -1
 centralWidgetVisible: 1
 orthographicViewHeight: 1
-textFiles: 1 "controllers/robot_localization/robot_localization.cpp" "controllers/camera_find_goal/camera_find_goal.cpp"
-globalOptionalRendering: CameraFrustums
+textFiles: 1 "controllers/robot_localization/robot_localization.cpp" "controllers/robot_localization_3/robot_localization_3.cpp"
+globalOptionalRendering: CameraFrustums::CoordinateSystem
 consoles: Console:All:All
 renderingDevicePerspectives: ROBOTIS OP2:Camera;1;1.95;0;0
 renderingDevicePerspectives: ROBOTIS OP3:Camera;1;0.143519;0;0
+renderingDevicePerspectives: e-puck(1):camera;1;1;0;0
+renderingDevicePerspectives: e-puck(1):my_camera;1;1;0;0
+renderingDevicePerspectives: e-puck(2):camera;1;1;0;0
+renderingDevicePerspectives: e-puck(2):my_camera;1;1;0;0
+renderingDevicePerspectives: e-puck(3):camera;1;1;0;0
+renderingDevicePerspectives: e-puck(3):my_camera;1;1;0;0
+renderingDevicePerspectives: e-puck(4):camera;1;1;0;0
+renderingDevicePerspectives: e-puck(4):my_camera;1;1;0;0
+renderingDevicePerspectives: e-puck(5):camera;1;1;0;0
+renderingDevicePerspectives: e-puck(5):my_camera;1;1;0;0
+renderingDevicePerspectives: e-puck(6):camera;1;1;0;0
+renderingDevicePerspectives: e-puck(6):my_camera;1;1;0;0
+renderingDevicePerspectives: e-puck(7):camera;1;1;0;0
+renderingDevicePerspectives: e-puck(7):my_camera;1;1;0;0
 renderingDevicePerspectives: e-puck:camera;0;1;0;0
-renderingDevicePerspectives: e-puck:my_camera;1;1.41667;0;0
+renderingDevicePerspectives: e-puck:my_camera;1;0.699857;0;0

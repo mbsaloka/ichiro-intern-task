@@ -8,8 +8,8 @@ EXTERNPROTO "../protos/RobotstadiumSoccerField.proto"
 WorldInfo {
 }
 Viewpoint {
-  orientation 0.15004811507222646 0.8861786992347473 -0.4383752686750054 0.7371669958318153
-  position -7.696184231029931 3.5629410440282 7.96887905548304
+  orientation 0.15004811507222643 0.8861786992347472 -0.4383752686750053 0.7371669958318153
+  position -5.0925414436816 3.3352859146629803 5.609238172830197
   follow "e-puck"
 }
 TexturedBackground {
@@ -19,7 +19,8 @@ TexturedBackgroundLight {
 RobotstadiumSoccerField {
 }
 E-puck {
-  translation 0 0 -6.67461e-05
+  translation 1.55275 1.40134 -6.67461e-05
+  rotation 0 0 1 2.3562
   controller "robot_localization_4"
   turretSlot [
     Camera {
@@ -32,6 +33,8 @@ E-puck {
       height 144
       recognition Recognition {
       }
+    }
+    InertialUnit {
     }
   ]
 }

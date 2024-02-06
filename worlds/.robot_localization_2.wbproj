@@ -9,4 +9,4 @@ textFiles: 1 "controllers/camera_recognize_pixel/camera_recognize_pixel.cpp" "co
 globalOptionalRendering: CameraFrustums
 consoles: Console:All:All
 renderingDevicePerspectives: e-puck:camera;1;1;0;0
-renderingDevicePerspectives: e-puck:my_camera;1;4.82692;0;0
+renderingDevicePerspectives: e-puck:my_camera;1;3.51282;0;0

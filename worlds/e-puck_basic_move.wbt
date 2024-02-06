@@ -9,7 +9,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation -0.2963629685676427 0.4416507311899207 0.8468256151659459 1.3402033480171134
-  position -0.40807043465130005 -1.217562686584416 0.9019126379480764
+  position -0.570975786945768 -1.6152919778689492 1.244736328691046
 }
 TexturedBackground {
 }
@@ -19,5 +19,9 @@ RectangleArena {
   floorSize 1.5 1.5
 }
 E-puck {
-  controller "move_forward"
+  controller "move_kinematik"
+  turretSlot [
+    InertialUnit {
+    }
+  ]
 }
