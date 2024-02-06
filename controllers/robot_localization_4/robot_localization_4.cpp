@@ -123,6 +123,22 @@ double calculate_object_likelihood(const RecognizedObject &measurement,
         double relative_position_x = particle.x + measurement.position[0] * 100;
         double relative_position_y = particle.y + measurement.position[1] * 100;
 
+        double dx = relative_position_x - particle.x;
+        double dy = relative_position_y - particle.y;
+
+        double x_rot = dx * cos(particle.theta) - dy * sin(particle.theta);
+        double y_rot = dx * sin(particle.theta) + dy * cos(particle.theta);
+
+        relative_position_x = x_rot + particle.x;
+        relative_position_y = y_rot + particle.y;
+
+        // relative_position_x =
+        //     particle.x + (dx * cos(particle.theta) - dy *
+        //     sin(particle.theta));
+        // relative_position_y =
+        //     particle.y + (dx * sin(particle.theta) + dy *
+        //     cos(particle.theta));
+
         double exponent =
             -0.5 *
             (pow((LANDMARK[i][0] - relative_position_x), 2) / pow(sigma_x, 2) +
@@ -172,6 +188,29 @@ double calculate_total_likelihood(
     return total_likelihood;
 }
 
+// Generate first gen particles
+void init_particles(std::vector<Particle> &particles,
+                    std::vector<double> &weights) {
+    std::vector<Particle> new_particles;
+    std::vector<double> new_weights;
+    int num_particles = FIELD_WIDTH * FIELD_LENGTH;
+    for (int i = 0; i < FIELD_WIDTH; ++i) {
+        for (int j = -FIELD_LENGTH / 2; j < FIELD_LENGTH / 2; ++j) {
+            Particle particle;
+            particle.base_x = i;
+            particle.base_y = j;
+            particle.x = i;
+            particle.y = j;
+            particle.theta = 0.0;
+            new_particles.push_back(particle);
+            new_weights.push_back(1.0 / num_particles);
+        }
+    }
+
+    particles = new_particles;
+    weights = new_weights;
+}
+
 // Function for resampling particles
 void resample_particles(std::vector<Particle> &particles,
                         std::vector<double> &weights) {
@@ -202,7 +241,8 @@ void print_particles(std::vector<Particle> &particles,
                       << weights[i] << std::setw(5) << " [" << std::fixed
                       << std::setprecision(2) << particles[i].x << ", "
                       << std::fixed << std::setprecision(2) << particles[i].y
-                      << "]" << std::endl;
+                      << ", " << std::fixed << std::setprecision(2)
+                      << particles[i].theta << "]" << std::endl;
             sum_samples += weights[i];
 
             if (weights[i] > best_sample_weight) {
@@ -266,18 +306,8 @@ int main(int argc, char **argv) {
     std::vector<Particle> particles;
     std::vector<double> weights;
 
-    for (int i = 0; i < FIELD_WIDTH; ++i) {
-        for (int j = -FIELD_LENGTH / 2; j < FIELD_LENGTH / 2; ++j) {
-            Particle particle;
-            particle.base_x = i;
-            particle.base_y = j;
-            particle.x = i;
-            particle.y = j;
-            particle.theta = 0.0;
-            particles.push_back(particle);
-            weights.push_back(1.0 / num_particles);
-        }
-    }
+    // Init particles
+    init_particles(particles, weights);
 
     // Timer
     auto lastTime = std::chrono::high_resolution_clock::now();
@@ -315,7 +345,7 @@ int main(int argc, char **argv) {
         robot_pose[0] += v * cos(robot_pose[2]) * dt;
         robot_pose[1] += v * sin(robot_pose[2]) * dt;
         // robot_pose[2] += w * dt;
-        robot_pose[2] = -imu->getRollPitchYaw()[2];
+        robot_pose[2] = imu->getRollPitchYaw()[2];
 
         for (int i = 0; i < 2; i++) {
             last_ps_value[i] = ps_value[i];
@@ -380,8 +410,12 @@ int main(int argc, char **argv) {
             // Resampling particles based on weights
             resample_particles(particles, weights);
             num_particles = particles.size();
+        } else if (num_particles == 0) {
+            init_particles(particles, weights);
+            num_particles = particles.size();
         } else {
             std::cout << iteration << " iteration" << std::endl;
+            std::cout << "Num particles: " << num_particles << std::endl;
             print_particles(particles, weights, num_particles);
         }
 
