@@ -6,6 +6,7 @@ maximizedDockId: -1
 centralWidgetVisible: 1
 orthographicViewHeight: 1
 textFiles: 0 "controllers/robot_localization_5/robot_localization_5.cpp"
+globalOptionalRendering: CameraFrustums
 consoles: Console:All:All
 renderingDevicePerspectives: e-puck:camera;1;1;0;0
 renderingDevicePerspectives: e-puck:my_camera;1;1;0;0

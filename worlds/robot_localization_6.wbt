@@ -8,8 +8,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/project
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.15233471213824126 0.8953791285872635 0.41843799011092625 0.7723741050896037
-  position -6.486776305547983 -2.8445473923987894 7.786704949758888
+  orientation 0.08394605975923897 0.9825701833454283 -0.16585805332099418 0.9512914913109128
+  position -3.645628481228606 0.8959137513778477 8.152081318542992
   follow "e-puck"
 }
 TexturedBackground {
@@ -20,9 +20,9 @@ RobocupSoccerField {
   size "kid"
 }
 E-puck {
-  translation 1.55275 1.40134 -6.67461e-05
-  rotation 0 0 1 2.3562
-  controller "robot_localization_5"
+  translation 4.11245 -1.62943 0.00993604
+  rotation 0 0 1 2.87979
+  controller "robot_localization_6"
   turretSlot [
     Camera {
       translation 0.044 0 -0.0206
