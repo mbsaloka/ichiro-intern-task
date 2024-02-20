@@ -1,8 +1,8 @@
 // File:          robot_localization.cpp
-// Date:          7 Feb 2024
-// Description:   localization using camera with mcl algorithm
-// Author:        mbsaloka
-// Modifications: activate angular localization
+// Date:          18 Feb 2024
+// Description:   localization using camera with mcl algorithm (implement random
+//                distribution)
+// Author:        mbsaloka Modifications: activate angular localization
 
 #include <webots/Robot.hpp>
 #include <webots/Motor.hpp>
@@ -17,16 +17,33 @@
 #include <vector>
 #include <utility>
 #include <chrono>
+#include <random>
 
 #define TIME_STEP 64
 #define MAX_SPEED 6.28
 #define WHEEL_R 0.020
 #define WHEEL_DIS 0.052
-#define FIELD_WIDTH 450
-#define FIELD_LENGTH 600
+// #define FIELD_WIDTH 450
+// #define FIELD_LENGTH 600
+#define FIELD_WIDTH 50
+#define FIELD_LENGTH 100
 #define NUM_ANGLE 24
+#define START_X 0
+#define START_Y 0
+#define START_W 0
+#define VAR_X 10
+#define VAR_Y 10
+#define VAR_W 0.05
+#define N_PARTICLE 1000
+#define LB_WEIGHT 0.000001
 
 using namespace webots;
+
+double w_fast = 0.0;
+double w_slow = 0.0;
+double a_fast = 0.5;
+double a_slow = 0.0005;
+double max_weight;
 
 typedef struct recognizedObj_t {
     const double *position;
@@ -39,6 +56,7 @@ typedef struct particle_t {
     double x;
     double y;
     double theta;
+    double weight;
 } Particle;
 
 // Landmark pose in cm
@@ -76,6 +94,15 @@ void teleop_keyboard(Keyboard kb, Motor *leftMotor, Motor *rightMotor,
 
     leftMotor->setVelocity(leftSpeed * MAX_SPEED);
     rightMotor->setVelocity(rightSpeed * MAX_SPEED);
+}
+
+double get_random_number() {
+    // Random Generators
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    // get random number from a uniform distribution
+    std::uniform_real_distribution<double> dist(0.0, 1.0);
+    return dist(gen);
 }
 
 std::vector<RecognizedObject> camera_recognition(Camera *camera) {
@@ -163,100 +190,179 @@ double calculate_total_likelihood(
 }
 
 // Generate first gen particles
-void init_particles(std::vector<Particle> &particles,
-                    std::vector<double> &weights) {
+void init_particles(std::vector<Particle> &particles, bool init = false) {
     std::vector<Particle> new_particles;
-    std::vector<double> new_weights;
-    std::vector<double> angles;
 
-    int num_particles = FIELD_WIDTH * FIELD_LENGTH * NUM_ANGLE;
+    std::random_device xrd, yrd, wrd;
+    if (init) {
+        std::cout << "-------------------FIRST INIT---------------------"
+                  << std::endl;
+        std::normal_distribution<double> xrg(START_X, VAR_X),
+            yrg(START_Y, VAR_Y), wrg(START_W, VAR_W);
+        std::vector<Particle> new_particles;
+        for (int i = 0; i < N_PARTICLE; i++) {
+            Particle p;
+            p.base_x = xrg(xrd);
+            p.base_y = yrg(yrd);
+            p.base_theta = wrg(wrd);
+            p.x = p.base_x;
+            p.y = p.base_y;
+            p.theta = p.base_theta;
+            p.weight = 1.0 / N_PARTICLE;
 
-    for (int i = 0; i < 12; i++) {
-        double angle = (double)i / 12 * M_PI;
-        angles.push_back(angle);
-    }
-
-    for (int i = 12; i > 0; i--) {
-        double angle = (double)i / 12 * M_PI * -1;
-        angles.push_back(angle);
-    }
-
-    for (auto angle : angles) {
-        for (int i = 0; i < FIELD_WIDTH; ++i) {
-            for (int j = -FIELD_LENGTH / 2; j < FIELD_LENGTH / 2; ++j) {
-                Particle particle;
-                particle.base_x = i;
-                particle.base_y = j;
-                particle.x = i;
-                particle.y = j;
-                particle.base_theta = angle;
-                particle.theta = angle;
-                new_particles.push_back(particle);
-                new_weights.push_back(1.0 / num_particles);
-            }
+            new_particles.push_back(p);
         }
+        particles = new_particles;
+    } else {
+        std::cout << "---------------------RESTART-----------------------"
+                  << std::endl;
+        std::uniform_real_distribution<double> xrg(0, FIELD_WIDTH),
+            yrg(-FIELD_LENGTH / 2, FIELD_LENGTH / 2), wrg(-3.14, 3.14);
+        std::vector<Particle> new_particles;
+
+        for (int i = 0; i < N_PARTICLE; i++) {
+            Particle p;
+            p.base_x = xrg(xrd);
+            p.base_y = yrg(yrd);
+            p.base_theta = wrg(wrd);
+            p.x = p.base_x;
+            p.y = p.base_y;
+            p.theta = p.base_theta;
+            p.weight = 1.0 / N_PARTICLE;
+
+            new_particles.push_back(p);
+        }
+        particles = new_particles;
+
+        // for (auto &p : particles) {
+        //     p.base_x = xrg(xrd);
+        //     p.base_y = yrg(yrd);
+        //     p.base_theta = wrg(wrd);
+        //     p.x = p.base_x;
+        //     p.y = p.base_y;
+        //     p.theta = p.base_theta;
+        //     p.weight = 1.0 / N_PARTICLE;
+        // }
     }
-
-    // for (double angle = -3.14; angle < 3.13; angle += 0.01) {
-    //     for (int i = 0; i < FIELD_WIDTH; ++i) {
-    //         for (int j = -FIELD_LENGTH / 2; j < FIELD_LENGTH / 2; ++j) {
-    //             Particle particle;
-    //             particle.base_x = i;
-    //             particle.base_y = j;
-    //             particle.x = i;
-    //             particle.y = j;
-    //             particle.base_theta = angle;
-    //             particle.theta = angle;
-    //             new_particles.push_back(particle);
-    //             new_weights.push_back(1.0 / num_particles);
-    //         }
-    //     }
-    // }
-
-    particles = new_particles;
-    weights = new_weights;
 }
 
 // Function for resampling particles
-void resample_particles(std::vector<Particle> &particles,
-                        std::vector<double> &weights) {
+void resample_particles(std::vector<Particle> &particles) {
+    // Method 4
+    // /*
     std::vector<Particle> new_particles;
-    std::vector<double> new_weights;
 
     for (size_t i = 0; i < particles.size(); ++i) {
-        if (weights[i] > 0.001) {
+        if (particles[i].weight > LB_WEIGHT) {
             new_particles.push_back(particles[i]);
-            new_weights.push_back(weights[i]);
+        }
+    }
+
+    // particles = new_particles;
+    // */
+
+    /* // Method 3
+    std::vector<Particle> p = particles;
+    // get random index
+    int index = get_random_number() * particles.size();
+    double beta = 0.0;
+    for (int i = 0; i < particles.size(); ++i) {
+        beta += get_random_number() * 2 * max_weight;
+        while (beta > particles[index].weight) {
+            beta -= particles[index].weight;
+            index = (index + 1) % particles.size();
+        }
+        // std::cout << index << std::endl;
+        //  select particle at index
+        p[i] = particles[index];
+        // std::cout << p[i].r.get_pose() << std::endl;
+    }
+    // return new particle set
+    particles = p;
+    */
+
+    /* // Method 2
+    std::vector<Particle> plist;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> rg(0.0, 1.0 / N_PARTICLE);
+    double r = rg(gen);
+    // double c = vis_weight(particles[0]);
+    double c = particles[0].weight;
+    int idx = 0;
+    std::random_device rd1;
+    std::mt19937 gen1(rd1());
+    std::random_device rd2;
+    std::mt19937 gen2(rd2());
+    std::uniform_real_distribution<double> xrg(0, 450), yrg(-300, 300),
+        wrg(-3.14, 3.14);
+    double random_prob = (1.0 - (w_fast / w_slow));
+    // std::bernoulli_distribution random_gen((random_prob<0) ? 0.0 :
+    // (random_prob>1 ? 1.0 : random_prob));
+    std::bernoulli_distribution random_gen(std::max(0.0, random_prob));
+    for (int i = 0; i < N_PARTICLE; i++) {
+        if (random_gen(gen1)) {
+            Particle p;
+            p.base_x = xrg(gen2);
+            p.base_y = yrg(gen2);
+            p.base_theta = wrg(gen2);
+            p.x = p.base_x;
+            p.y = p.base_y;
+            p.theta = p.base_theta;
+            p.weight = 1.0 / N_PARTICLE;
+            plist.push_back(p);
+        } else {
+            double u = r + ((double)i / N_PARTICLE);
+            while (u > c) {
+                idx += 1;
+                // c += vis_weight(particles[idx]);
+                c += particles[idx].weight;
+            }
+            plist.push_back(particles[idx]);
+        }
+    }
+    particles = plist;
+    */
+
+    // Method 1
+    /*
+    std::vector<Particle> new_particles;
+
+    for (size_t i = 0; i < particles.size(); ++i) {
+        if (particles[i].weight > 0.00001) {
+            new_particles.push_back(particles[i]);
         }
     }
 
     particles = new_particles;
-    weights = new_weights;
+    */
 }
 
 // Print particles
-void print_particles(std::vector<Particle> &particles,
-                     std::vector<double> &weights, int num_particles) {
+void print_particles(std::vector<Particle> &particles, int num_particles) {
     double sum_samples = 0.0;
     double best_sample_weight = 0.0;
     int best_sample_index = 0;
     for (int i = 0; i < num_particles; i++) {
-        if (weights[i] > 0.00001) {
+        if (particles[i].weight > LB_WEIGHT) {
             std::cout << "Particle " << std::setw(5) << i
                       << "  weight: " << std::fixed << std::setprecision(5)
-                      << weights[i] << std::setw(5) << " [" << std::fixed
-                      << std::setprecision(2) << particles[i].x << ", "
-                      << std::fixed << std::setprecision(2) << particles[i].y
+                      << particles[i].weight << std::setw(5) << " ["
+                      << std::fixed << std::setprecision(2) << particles[i].x
                       << ", " << std::fixed << std::setprecision(2)
-                      << particles[i].theta << "]" << std::endl;
-            sum_samples += weights[i];
+                      << particles[i].y << ", " << std::fixed
+                      << std::setprecision(2) << particles[i].theta << "]"
+                      << std::endl;
 
-            if (weights[i] > best_sample_weight) {
-                best_sample_weight = weights[i];
+            if (particles[i].weight > best_sample_weight) {
+                best_sample_weight = particles[i].weight;
                 best_sample_index = i;
             }
         }
+        sum_samples += particles[i].weight;
     }
+
+    max_weight = best_sample_weight;
 
     std::cout << "Sum weights: " << sum_samples << std::endl;
     std::cout << "Best sample: " << std::fixed << std::setprecision(5)
@@ -312,7 +418,8 @@ int main(int argc, char **argv) {
     double timestep = robot->getBasicTimeStep();
 
     // MCL variables
-    int num_particles = FIELD_WIDTH * FIELD_LENGTH * NUM_ANGLE;
+    // int num_particles = FIELD_WIDTH * FIELD_LENGTH * NUM_ANGLE;
+    int num_particles = N_PARTICLE;
     std::vector<Particle> particles;
     std::vector<double> weights;
 
@@ -320,8 +427,34 @@ int main(int argc, char **argv) {
     auto lastTime = std::chrono::high_resolution_clock::now();
 
     // Flag for first iteration state
+    bool veryFirstIteration = true;
     bool firstIteration = true;
     int iteration = 0;
+
+    // Init particles with random normal distribution
+    std::random_device x_rd, y_rd, w_rd;
+    std::uniform_real_distribution<double> x_rgen(0, FIELD_WIDTH),
+        y_rgen(-FIELD_LENGTH / 2, FIELD_LENGTH / 2), w_rgen(-3.14, 3.14);
+    for (int i = 0; i < N_PARTICLE; i++) {
+        Particle new_particle;
+        new_particle.base_x = x_rgen(x_rd);
+        new_particle.base_y = y_rgen(y_rd);
+        new_particle.base_theta = w_rgen(w_rd);
+        new_particle.x = new_particle.base_x;
+        new_particle.y = new_particle.base_y;
+        new_particle.theta = new_particle.base_theta;
+        new_particle.weight = 1.0 / N_PARTICLE;
+
+        // std::cout << "[DEBUG] Particle " << i << " (" << std::fixed
+        //           << std::setprecision(3) << new_particle.x << " " <<
+        //           std::fixed
+        //           << std::setprecision(3) << new_particle.y << " " <<
+        //           std::fixed
+        //           << std::setprecision(3) << new_particle.theta << ")"
+        //           << std::endl;
+
+        particles.push_back(new_particle);
+    }
 
     while (robot->step(TIME_STEP) != -1) {
         // Calling teleop function
@@ -329,8 +462,12 @@ int main(int argc, char **argv) {
 
         // Init particles
         if (firstIteration) {
-            init_particles(particles, weights);
-            num_particles = particles.size();
+            robot_pose[0] = 0.0;
+            robot_pose[1] = 0.0;
+            robot_pose[2] = 0.0;
+            init_particles(particles, veryFirstIteration);
+            veryFirstIteration = false;
+            num_particles = N_PARTICLE;
         }
 
         // Camera recognize object
@@ -386,7 +523,7 @@ int main(int argc, char **argv) {
                 particles[i].theta = particles[i].base_theta + robot_pose[2];
             }
 
-            if (num_particles > 3) {
+            if (num_particles > 10) {
                 for (int i = 0; i < num_particles; ++i) {
                     double likelihood = 0.0;
                     if (recognized_object.size() > 0) {
@@ -396,33 +533,45 @@ int main(int argc, char **argv) {
                     }
 
                     // Assign likelihood as weight to the particle
-                    weights[i] = likelihood;
+                    particles[i].weight = likelihood;
                 }
 
                 // Normalize weights
                 double sum_weights = 0.0;
                 for (int i = 0; i < num_particles; ++i) {
-                    sum_weights += weights[i];
+                    sum_weights += particles[i].weight;
+                    // std::cout << "[likelihood] " << i << ": "
+                    //           << particles[i].weight << std::endl;
                 }
-
-                for (int i = 0; i < num_particles; ++i) {
-                    weights[i] /= sum_weights;
+                if (sum_weights > 0.0) {
+                    for (int i = 0; i < num_particles; ++i) {
+                        particles[i].weight /= sum_weights;
+                    }
+                } else {
+                    for (int i = 0; i < num_particles; ++i) {
+                        particles[i].weight = 1.0 / num_particles;
+                    }
                 }
+                double w_avg = 0.0;
+                w_avg = sum_weights / N_PARTICLE;
+                w_slow = w_slow + a_slow * (w_avg - w_slow);
+                w_fast = w_fast + a_fast * (w_avg - w_fast);
             }
+
             // Print particles
             std::cout << iteration << " iteration" << std::endl;
-            print_particles(particles, weights, num_particles);
+            print_particles(particles, num_particles);
             std::cout << "Num particles: " << num_particles << std::endl;
 
             // Resampling particles based on weights
-            resample_particles(particles, weights);
+            resample_particles(particles);
             num_particles = particles.size();
         } else if (num_particles == 0) {
-            init_particles(particles, weights);
-            num_particles = particles.size();
+            init_particles(particles);
+            num_particles = N_PARTICLE;
         } else {
             std::cout << iteration << " iteration" << std::endl;
-            print_particles(particles, weights, num_particles);
+            print_particles(particles, num_particles);
             std::cout << "Num particles: " << num_particles << std::endl;
         }
 

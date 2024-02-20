@@ -9,7 +9,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation 0.2078093815856715 0.6957979629627915 -0.687517603892301 0.8196114880559646
-  position -4.607654809285501 4.400832859052667 5.164574082039982
+  position -5.8060274652712165 5.186738011666561 6.117994310601605
   follow "e-puck"
 }
 TexturedBackground {
@@ -20,9 +20,8 @@ RobocupSoccerField {
   size "kid"
 }
 E-puck {
-  translation 1.24215 0.230636 0.00993604
-  rotation 0 0 1 -0.785395307179586
-  controller "robot_localization_6"
+  translation 0 0 0.00993604
+  controller "robot_localization_7"
   turretSlot [
     Camera {
       translation 0.044 0 -0.0206

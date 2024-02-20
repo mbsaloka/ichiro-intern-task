@@ -1,6 +1,6 @@
 // File:          robot_localization.cpp
-// Date:          7 Feb 2024
-// Description:   localization using camera with mcl algorithm
+// Date:          17 Feb 2024
+// Description:   localization using camera with mcl algorithm (optimalization)
 // Author:        mbsaloka
 // Modifications: activate angular localization
 
@@ -25,6 +25,8 @@
 #define FIELD_WIDTH 450
 #define FIELD_LENGTH 600
 #define NUM_ANGLE 24
+#define START_X 0
+#define START_Y 0
 
 using namespace webots;
 
@@ -182,13 +184,26 @@ void init_particles(std::vector<Particle> &particles,
     }
 
     for (auto angle : angles) {
-        for (int i = 0; i < FIELD_WIDTH; ++i) {
-            for (int j = -FIELD_LENGTH / 2; j < FIELD_LENGTH / 2; ++j) {
+        for (int i = START_X - 5; i < START_X + 5; ++i) {
+            for (int j = START_Y - 5; j < START_Y + 5; ++j) {
                 Particle particle;
                 particle.base_x = i;
                 particle.base_y = j;
                 particle.x = i;
                 particle.y = j;
+                particle.base_theta = angle;
+                particle.theta = angle;
+                new_particles.push_back(particle);
+                new_weights.push_back(1.0 / num_particles);
+            }
+        }
+        for (int i = 0; i <= 5; i++) {
+            for (int j = -3; j <= 3; j++) {
+                Particle particle;
+                particle.base_x = i * (FIELD_WIDTH / 5);
+                particle.base_y = j * (FIELD_LENGTH / 6);
+                particle.x = i * (FIELD_WIDTH / 5);
+                particle.y = j * (FIELD_LENGTH / 6);
                 particle.base_theta = angle;
                 particle.theta = angle;
                 new_particles.push_back(particle);
